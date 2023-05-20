@@ -1,3 +1,6 @@
+<h1>How to run application</h1>
+<p>Rename file 'example.env.local' to '.env.local' with your MongoDB connection string and execute application with 'yarn dev' in one console and 'tauri dev' in another.</p>
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
