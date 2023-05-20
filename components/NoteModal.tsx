@@ -3,14 +3,22 @@ import React, { useState } from 'react';
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave: (newNote: { name: string; description: string }) => void;
 }
 
-const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose }) => {
+const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
   const handleSubmit = () => {
-    console.log('Note submitted:', { name, description });
+    onSave({ name, description });
+    setName('');
+    setDescription('');
+  };
+
+  const handleClose = () => {
+    setName('');
+    setDescription('');
     onClose();
   };
 
@@ -31,7 +39,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose }) => {
       <br />
       <p>Просмотров: 1000</p>
       <button onClick={handleSubmit}>Сохранить</button>
-      <button onClick={onClose}>Закрыть</button>
+      <button onClick={handleClose}>Закрыть</button>
     </div>
     );
 };

@@ -1,8 +1,9 @@
 import React from 'react';
 
 interface Note {
-  id: number;
+  _id: number;
   title: string;
+  description: string;
 }
 
 interface NotesListProps {
@@ -10,15 +11,15 @@ interface NotesListProps {
 }
 
 const NotesList: React.FC<NotesListProps> = ({ notes }) => {
+  console.log(notes)
   return (
-    <div>
-      <h2>Список заметок:</h2>
-      <ul>
-        {notes.map((note) => (
-          <li key={note.id}>{note.title}</li>
-        ))}
-      </ul>
-    </div>
+    <ul>
+      {notes.map((note) => (
+        <li key={note._id}>
+          {note.title}
+        </li>
+      ))}
+    </ul>
     );
 };
 
