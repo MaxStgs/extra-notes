@@ -1,20 +1,40 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
+import { OnSaveNote } from './types';
+
+interface Note {
+  _id: number;
+  title: string;
+  description: string;
+} 
 
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (newNote: { name: string; description: string }) => void;
+  onSave: (note: OnSaveNote) => void;
+  note: Note;
 }
 
-const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+const NoteModal: React.FC<NoteModalProps> = ({ note, isOpen, onClose, onSave }) => {
+  const [name, setName] = useState(note?.title || '');
+  const [description, setDescription] = useState(note?.description || '');
+
+  console.log(`NoteModal: ${note}, ${name}, ${description}`);
 
   const handleSubmit = () => {
-    onSave({ name, description });
+      onSave({
+          _id: note?._id,
+          name,
+          description,
+      });
     setName('');
     setDescription('');
+    onClose();
   };
+
+  useEffect(() => {
+    setName(note?.title || '');
+    setDescription(note?.description || '');
+  }, [note]);
 
   const handleClose = () => {
     setName('');

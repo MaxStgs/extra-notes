@@ -1,4 +1,5 @@
 import React from 'react';
+import {TFunc} from "ts-interface-checker";
 
 interface Note {
   _id: number;
@@ -8,14 +9,15 @@ interface Note {
 
 interface NotesListProps {
   notes: Note[];
+  onNoteClick: Function;
 }
 
-const NotesList: React.FC<NotesListProps> = ({ notes }) => {
+const NotesList: React.FC<NotesListProps> = ({ notes, onNoteClick }) => {
   console.log(notes)
   return (
     <ul>
       {notes.map((note) => (
-        <li key={note._id}>
+        <li key={note._id} onClick={() => onNoteClick(note)}>
           {note.title}
         </li>
       ))}
