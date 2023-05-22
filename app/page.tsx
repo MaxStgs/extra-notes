@@ -3,12 +3,8 @@ import type {NextPage} from 'next';
 import {useState, useEffect} from 'react';
 import NotesList from './NotesList';
 import NoteModal from '../components/NoteModal';
-
-interface Note {
-    _id: number;
-    title: string;
-    description: string;
-}
+import {OnSaveNote, Note} from '@/components/types';
+import '@/src/styles.css';
 
 const Page: NextPage = () => {
     const [notes, setNotes] = useState<Note[]>([]);
@@ -32,6 +28,11 @@ const Page: NextPage = () => {
         setIsModalOpen(true);
     };
 
+    const handleCloseModal = () => {
+        setSelectedNote(null);
+        setIsModalOpen(false);
+    };
+
     const handleSaveNote = async (newNote: OnSaveNote) => {
         const requestOptions: RequestInit = {
             headers: {'Content-Type': 'application/json'},
@@ -52,7 +53,7 @@ const Page: NextPage = () => {
         const savedNote = await res.json();
 
         if (newNote._id) {
-            setNotes((prevNotes) => prevNotes.map((note) => (note._id === savedNote.id ? savedNote : note)));
+            setNotes((prevNotes) => prevNotes.map((note) => (note._id === savedNote._id ? savedNote : note)));
         } else {
             setNotes((prevNotes) => [...prevNotes, savedNote]);
         }
@@ -60,13 +61,48 @@ const Page: NextPage = () => {
         setIsModalOpen(false);
     };
 
+    const handleDeleteNote = async (_id: number) => {
+        setSelectedNote(null);
+
+        // Закрываем модальное окно сразу после нажатия кнопки "Удалить"
+        setIsModalOpen(false);
+
+        // Вначале обновляем состояние notes
+        setNotes((prevNotes) =>
+            prevNotes.map((note) => (note._id === _id ? {...note, isDeleted: true} : note))
+        );
+
+        // Затем обновляем данные на сервере
+        const requestOptions: RequestInit = {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({_id, isDeleted: true}),
+        };
+
+        try {
+            const res = await fetch('/api/notes', requestOptions);
+            const updatedNote = await res.json();
+
+            if (!res.ok) {
+                throw new Error('Ошибка при обновлении заметки на сервере');
+            }
+        } catch (error) {
+            console.error('Ошибка при удалении заметки:', error);
+
+            // Восстанавливаем состояние notes в случае ошибки
+            setNotes((prevNotes) =>
+                prevNotes.map((note) => (note._id === _id ? {...note, isDeleted: false} : note))
+            );
+        }
+    };
+
     return (
         <div>
             <h1>Приложение "На каждый день"</h1>
             <button onClick={() => setIsModalOpen(true)}>Создать заметку</button>
             <NotesList notes={notes} onNoteClick={handleNoteClick}/>
-            <NoteModal note={selectedNote} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}
-                       onSave={handleSaveNote}/>
+            <NoteModal key={selectedNote?._id ?? "new"} note={selectedNote} isOpen={isModalOpen} onClose={handleCloseModal}
+                       onSave={handleSaveNote} onDelete={handleDeleteNote}/>
         </div>
     );
 };
