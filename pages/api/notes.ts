@@ -2,6 +2,7 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import {createRouter} from 'next-connect';
 import {connectToDatabase} from '@/lib/mongodb';
 import {ObjectId} from 'mongodb';
+import {int} from "yaml/dist/schema/core/int";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -29,8 +30,12 @@ const handler = router.get(async (req: NextApiRequest, res: NextApiResponse) => 
 });
 
 export default router.handler({
-    onError: (err, req, res) => {
-        console.error(err.stack);
-        res.status(err.statusCode || 500).end(err.message);
-    },
+    onError: (err: unknown, req, res) => {
+        if (err instanceof Error) {
+            console.error(err.stack);
+            res.status(500).end(err.message);
+        } else {
+            res.status(500).end("Произошла неизвестная ошибка");
+        }
+    }
 });

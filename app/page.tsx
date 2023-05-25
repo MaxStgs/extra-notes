@@ -98,7 +98,7 @@ const Page: NextPage = () => {
 
     return (
         <div>
-            <h1>Приложение "На каждый день"</h1>
+            <h1>Приложение &quot;На каждый день&quot;</h1>
             <button onClick={() => setIsModalOpen(true)}>Создать заметку</button>
             <NotesList notes={notes} onNoteClick={handleNoteClick}/>
             <NoteModal key={selectedNote?._id ?? "new"} note={selectedNote} isOpen={isModalOpen} onClose={handleCloseModal}
